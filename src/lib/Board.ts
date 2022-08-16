@@ -26,29 +26,58 @@ export class Board {
 
     makeMove(player: string, row: number, col: number) {
         this.#board[row][col] = player;
-        for (let n = -2; n <= 2; n++) {
-            this.#setScore(Game.Player1, (i) => row + i + n, (i) => col)
-            this.#setScore(Game.Player1, (i) => row, (i) => col + i + n)
-            this.#setScore(Game.Player1, (i) => row + i + n, (i) => col + i + n)
-            this.#setScore(Game.Player1, (i) => row + i + n, (i) => col - i - n)
-        }
-
+        this.#starIterate(row, col, (r, c) => {
+            if (!this.#isValidIndex(r) || !this.#isValidIndex(c)) {
+                return;
+            }
+            var score = 0;
+            score += this.#getScore(Game.Player1, (i) => r + i, (i) => c);
+            score += this.#getScore(Game.Player1, (i) => r, (i) => c + i);
+            score += this.#getScore(Game.Player1, (i) => r + i, (i) => c + i);
+            score += this.#getScore(Game.Player1, (i) => r + i, (i) => c - i);
+            if (score < 0) {
+                score = -1;
+            }
+            this.#score[r][c].player1 = score;
+        });
+        this.#starIterate(row, col, (r, c) => {
+            if (!this.#isValidIndex(r) || !this.#isValidIndex(c)) {
+                return;
+            }
+            var score = 0;
+            score += this.#getScore(Game.Player2, (i) => r + i, (i) => c);
+            score += this.#getScore(Game.Player2, (i) => r, (i) => c + i);
+            score += this.#getScore(Game.Player2, (i) => r + i, (i) => c + i);
+            score += this.#getScore(Game.Player2, (i) => r + i, (i) => c - i);
+            if (score < 0) {
+                score = -1;
+            }
+            this.#score[r][c].player2 = score;
+        });
     }
 
-    #setScore(player: string, getRow: (index: number) => number, getCol: (index: number) => number) {
+    #starIterate(row: number, col: number, func: (row: number, col: number) => void) {
+        for (let i = -4; i <= 4; i++) {
+            func(row + i, col);
+            func(row, col + i);
+            func(row + i, col + i);
+            func(row + i, col - i);
+        }
+    }
+
+    #getScore(player: string, getRow: (index: number) => number, getCol: (index: number) => number): number {
         let score = 0;
         let rOrigin = getRow(0);
         let cOrigin = getCol(0);
 
         if (!this.#isValidIndex(rOrigin) || !this.#isValidIndex(cOrigin)) {
-            return;
+            return 0;
         }
 
         let origin = this.#board[rOrigin][cOrigin];
 
         if (origin === Game.Player1 || origin === Game.Player2) {
-            this.#score[rOrigin][cOrigin].player1 = -1;
-            return;
+            return -1;
         }
 
         for (let n = -2; n <= 2; n++) {
@@ -66,10 +95,10 @@ export class Board {
                 }
 
             }
-            score += windowScore;
+            score += (windowScore * windowScore);
         }
 
-        this.#score[rOrigin][cOrigin].player1 = score;
+        return score;
     }
 
 
