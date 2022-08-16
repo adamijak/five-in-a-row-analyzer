@@ -41,9 +41,17 @@
     {#each board.board as rowValues, r}
         {#each rowValues as value, c}
             <div
-                style="background-color: rgb(255, {255 -
-                    board.score[r][c].player1 * 10},{255 -
-                    board.score[r][c].player1 * 10}, 1);"
+                style="background-color: rgb(
+                    {255 +
+                    board.score[r][c].player1 * 7 -
+                    board.score[r][c].player2 * 7},
+                    {255 -
+                    board.score[r][c].player1 * 3 -
+                    board.score[r][c].player2 * 3},
+                    {255 -
+                    board.score[r][c].player1 * 7 +
+                    board.score[r][c].player2 * 7};
+                    font-size: 30px"
                 class="grid-item"
                 on:click={() => handleClick(r, c)}
             >
@@ -55,12 +63,17 @@
 <br />
 <div
     class="grid-container"
-    style="grid-template-columns: repeat({boardSize}, 50px); grid-template-rows: repeat({boardSize}, 50px)"
+    style="grid-template-columns: repeat({boardSize}, 50px); grid-template-rows: repeat({boardSize}, 50px); "
 >
     {#each board.score as rowValues, r}
         {#each rowValues as value, c}
             <div class="grid-item">
-                {value.player1}
+                <div style="text-align: start;padding-left: 0.4rem;">
+                    {value.player1}
+                </div>
+                <div style="text-align: end; padding-right: 0.4rem;">
+                    {value.player2}
+                </div>
             </div>
         {/each}
     {/each}
@@ -72,11 +85,11 @@
         justify-content: center;
     }
     .grid-item {
-        background-color: white;
+        background-color: cmyk();
         border: 1px solid black;
         width: 50px;
         height: 50px;
-        font-size: 30px;
+        font-size: 18px;
         text-align: center;
     }
 </style>
