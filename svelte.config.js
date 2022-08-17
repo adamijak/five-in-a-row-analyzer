@@ -9,7 +9,10 @@ const config = {
 
 	kit: {
 		adapter: adapter(),
-		prerender: { default: true }
+		prerender: { default: true },
+		paths: {
+			base: dev ? "" : "/five-in-a-row-analyzer",
+		}
 	}
 };
 
