@@ -1,7 +1,7 @@
 <script lang="ts">
     import * as Game from "$lib/Game";
     import { Board } from "$lib/Board";
-    export let boardSize = 15;
+    export let boardSize = 30;
 
     let currentPlayer: string;
     let win: boolean;
@@ -36,7 +36,7 @@
 <br />
 <div
     class="grid-container"
-    style="grid-template-columns: repeat({boardSize}, 50px); grid-template-rows: repeat({boardSize}, 50px)"
+    style="grid-template-columns: repeat({boardSize}, 2rem); grid-template-rows: repeat({boardSize}, 2rem)"
 >
     {#each board.board as rowValues, r}
         {#each rowValues as value, c}
@@ -47,7 +47,7 @@
                     board.score[r][c].player1 * 3 -
                     board.score[r][c].player2 * 3},
                     {255 - board.score[r][c].player2 * 10});
-                    font-size: 30px"
+                    font-size: 1.5rem"
                 class="grid-item"
                 on:click={() => handleClick(r, c)}
             >
@@ -59,7 +59,7 @@
 <br />
 <div
     class="grid-container"
-    style="grid-template-columns: repeat({boardSize}, 50px); grid-template-rows: repeat({boardSize}, 50px); "
+    style="grid-template-columns: repeat({boardSize}, 2rem); grid-template-rows: repeat({boardSize}, 2rem); "
 >
     {#each board.score as rowValues, r}
         {#each rowValues as value, c}
@@ -81,11 +81,10 @@
         justify-content: center;
     }
     .grid-item {
-        background-color: cmyk();
         border: 1px solid black;
-        width: 50px;
-        height: 50px;
-        font-size: 18px;
+        width: 2rem;
+        height: 2rem;
+        font-size: 0.8rem;
         text-align: center;
     }
 </style>
