@@ -6,6 +6,7 @@
     let currentPlayer: string;
     let win: boolean;
     let board: Board;
+    let scoreVisible = false;
     restart();
 
     function handleClick(r: number, c: number) {
@@ -32,6 +33,9 @@
         <h1>Current Player: {currentPlayer}</h1>
     {/if}
     <button on:click={restart}>Restart</button>
+    <button on:click={() => (scoreVisible = !scoreVisible)}
+        >{scoreVisible ? "Hide score" : "Show score"}</button
+    >
 </div>
 <br />
 <div
@@ -40,19 +44,29 @@
 >
     {#each board.board as rowValues, r}
         {#each rowValues as value, c}
-            <div
-                style="background-color: rgb(
+            {#if scoreVisible}
+                <div
+                    style="background-color: rgb(
                     {255 - board.score[r][c].player1 * 10},
                     {255 -
-                    board.score[r][c].player1 * 3 -
-                    board.score[r][c].player2 * 3},
+                        board.score[r][c].player1 * 3 -
+                        board.score[r][c].player2 * 3},
                     {255 - board.score[r][c].player2 * 10});
                     font-size: 1.5rem"
-                class="grid-item"
-                on:click={() => handleClick(r, c)}
-            >
-                {value}
-            </div>
+                    class="grid-item"
+                    on:click={() => handleClick(r, c)}
+                >
+                    {value}
+                </div>
+            {:else}
+                <div
+                    style="background-color: white; font-size: 1.5rem"
+                    class="grid-item"
+                    on:click={() => handleClick(r, c)}
+                >
+                    {value}
+                </div>
+            {/if}
         {/each}
     {/each}
 </div>
