@@ -11,7 +11,7 @@ const config = {
 		adapter: adapter(),
 		prerender: { default: true },
 		paths: {
-			base: dev ? "" : "/five-in-a-row-analyzer",
+			base: "/five-in-a-row-analyzer",
 		}
 	}
 };
