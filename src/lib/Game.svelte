@@ -46,7 +46,7 @@
                     {255 -
                     board.score[r][c].player1 * 3 -
                     board.score[r][c].player2 * 3},
-                    {255 - board.score[r][c].player2 * 10};
+                    {255 - board.score[r][c].player2 * 10});
                     font-size: 30px"
                 class="grid-item"
                 on:click={() => handleClick(r, c)}
