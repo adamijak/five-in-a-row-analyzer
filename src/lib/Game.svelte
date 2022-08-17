@@ -42,15 +42,11 @@
         {#each rowValues as value, c}
             <div
                 style="background-color: rgb(
-                    {255 +
-                    board.score[r][c].player1 * 7 -
-                    board.score[r][c].player2 * 7},
+                    {255 - board.score[r][c].player1 * 10},
                     {255 -
                     board.score[r][c].player1 * 3 -
                     board.score[r][c].player2 * 3},
-                    {255 -
-                    board.score[r][c].player1 * 7 +
-                    board.score[r][c].player2 * 7};
+                    {255 - board.score[r][c].player2 * 10};
                     font-size: 30px"
                 class="grid-item"
                 on:click={() => handleClick(r, c)}
