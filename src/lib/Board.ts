@@ -54,6 +54,9 @@ export class Board {
             }
             this.#score[r][c].player2 = score;
         });
+
+        this.#setBestScores();
+
     }
 
     #starIterate(row: number, col: number, func: (row: number, col: number) => void) {
@@ -101,6 +104,32 @@ export class Board {
         return score;
     }
 
+    #setBestScores() {
+        let maxScore = -1;
+        let bestScores: BestScore[] = new Array<BestScore>();
+
+        for (let r = 0; r < this.#size; r++) {
+            for (let c = 0; c < this.#size; c++) {
+                let score = this.#score[r][c];
+                score.scoreIndex = 0;
+                let scoreSum = score.player1 + score.player2;
+
+                if (scoreSum > maxScore) {
+                    bestScores = new Array<BestScore>();
+                }
+
+                if (scoreSum >= maxScore) {
+                    maxScore = scoreSum;
+                    bestScores.push(new BestScore(r, c));
+                }
+            }
+        }
+        for (let i = 0; i < bestScores.length; i++) {
+            let score = bestScores[i];
+            this.#score[score.row][score.col].scoreIndex = bestScores.length - i;
+        }
+    }
+
 
 
     hasWon(player: string, row: number, col: number): boolean {
@@ -143,6 +172,17 @@ export class Board {
 class Score {
     player1: number = 0;
     player2: number = 0;
+    scoreIndex: number = 0;
+}
+
+class BestScore {
+    row: number;
+    col: number;
+
+    constructor(row: number, col: number) {
+        this.row = row;
+        this.col = col;
+    }
 }
 
 

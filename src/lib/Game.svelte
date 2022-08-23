@@ -56,7 +56,7 @@
                     class="grid-item"
                     on:click={() => handleClick(r, c)}
                 >
-                    {value}
+                    {board.score[r][c].scoreIndex > 0 ? "." : value}
                 </div>
             {:else}
                 <div
