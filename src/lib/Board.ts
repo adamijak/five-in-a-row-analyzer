@@ -1,16 +1,17 @@
-import * as Game from "$lib/Game";
+import { Stone } from "$lib/Stone";
+import { BestScore, Score } from "$lib/Score";
 export class Board {
 
     #size: number;
     #maxRowSize: number
-    #board: string[][];
+    #board: Stone[][];
     #score: Score[][];
 
     constructor(size: number = 5) {
         this.#size = size;
         this.#maxRowSize = 5
         this.#board = Array.from({ length: size }, () =>
-            Array.from({ length: size }, () => Game.EmptyPlace)
+            Array.from({ length: size }, () => Stone.None)
         );
         this.#score = Array.from({ length: size }, () =>
             Array.from({ length: size }, () => new Score)
@@ -24,39 +25,45 @@ export class Board {
         return this.#score;
     }
 
-    makeMove(player: string, row: number, col: number) {
-        this.#board[row][col] = player;
+    putStone(stone: Stone, row: number, col: number) {
+        this.#board[row][col] = stone;
+
         this.#starIterate(row, col, (r, c) => {
+            let getRowFunctions: ((i: number) => number)[] = [
+                (i) => r + i,
+                (i) => r,
+                (i) => r + i,
+                (i) => r + i,
+            ];
+            let getColFunctions: ((i: number) => number)[] = [
+                (i) => c,
+                (i) => c + i,
+                (i) => c + i,
+                (i) => c - i,
+            ];
+
             if (!this.#isValidIndex(r) || !this.#isValidIndex(c)) {
                 return;
             }
-            var score = 0;
-            score += this.#getScore(Game.Player1, (i) => r + i, (i) => c);
-            score += this.#getScore(Game.Player1, (i) => r, (i) => c + i);
-            score += this.#getScore(Game.Player1, (i) => r + i, (i) => c + i);
-            score += this.#getScore(Game.Player1, (i) => r + i, (i) => c - i);
-            if (score < 0) {
-                score = -1;
+            let scoreO = 0;
+            let scoreX = 0;
+
+            for (let i = 0; i < getRowFunctions.length; i++) {
+                scoreO += this.#getScore(Stone.O, getRowFunctions[i], getColFunctions[i]);
+                scoreX += this.#getScore(Stone.X, getRowFunctions[i], getColFunctions[i]);
             }
-            this.#score[r][c].player1 = score;
-        });
-        this.#starIterate(row, col, (r, c) => {
-            if (!this.#isValidIndex(r) || !this.#isValidIndex(c)) {
-                return;
+
+            scoreO < 0 ? -1 : scoreO;
+            scoreX < 0 ? -1 : scoreX;
+
+            if (scoreX < 0) {
+                scoreX = -1;
             }
-            var score = 0;
-            score += this.#getScore(Game.Player2, (i) => r + i, (i) => c);
-            score += this.#getScore(Game.Player2, (i) => r, (i) => c + i);
-            score += this.#getScore(Game.Player2, (i) => r + i, (i) => c + i);
-            score += this.#getScore(Game.Player2, (i) => r + i, (i) => c - i);
-            if (score < 0) {
-                score = -1;
-            }
-            this.#score[r][c].player2 = score;
+            this.#score[r][c].player1 = scoreO;
+            this.#score[r][c].player2 = scoreX;
         });
 
         this.#setBestScores();
-
     }
 
     #starIterate(row: number, col: number, func: (row: number, col: number) => void) {
@@ -68,7 +75,7 @@ export class Board {
         }
     }
 
-    #getScore(player: string, getRow: (index: number) => number, getCol: (index: number) => number): number {
+    #getScore(stone: Stone, getRow: (index: number) => number, getCol: (index: number) => number): number {
         let score = 0;
         let rOrigin = getRow(0);
         let cOrigin = getCol(0);
@@ -79,7 +86,7 @@ export class Board {
 
         let origin = this.#board[rOrigin][cOrigin];
 
-        if (origin === Game.Player1 || origin === Game.Player2) {
+        if (origin === Stone.O || origin === Stone.X) {
             return -1;
         }
 
@@ -88,12 +95,12 @@ export class Board {
             for (let i = -2; i <= 2; i++) {
                 let r = getRow(i + n);
                 let c = getCol(i + n);
-                if (!this.#isValidIndex(r) || !this.#isValidIndex(c) || (this.#board[r][c] != player && this.#board[r][c] != Game.EmptyPlace)) {
+                if (!this.#isValidIndex(r) || !this.#isValidIndex(c) || (this.#board[r][c] != stone && this.#board[r][c] != Stone.None)) {
                     windowScore = 0;
                     break;
                 }
 
-                if (this.#board[r][c] == player) {
+                if (this.#board[r][c] == stone) {
                     windowScore++;
                 }
 
@@ -130,25 +137,27 @@ export class Board {
         }
     }
 
+    getBestMoves() {
 
+    }
 
-    hasWon(player: string, row: number, col: number): boolean {
-        if (this.#hasWon(player, (i) => row + i, (i) => col) ||
-            this.#hasWon(player, (i) => row, (i) => col + i) ||
-            this.#hasWon(player, (i) => row + i, (i) => col + i) ||
-            this.#hasWon(player, (i) => row + i, (i) => col - i)) {
+    hasWon(stone: Stone, row: number, col: number): boolean {
+        if (this.#hasWon(stone, (i) => row + i, (i) => col) ||
+            this.#hasWon(stone, (i) => row, (i) => col + i) ||
+            this.#hasWon(stone, (i) => row + i, (i) => col + i) ||
+            this.#hasWon(stone, (i) => row + i, (i) => col - i)) {
             return true;
         }
         return false;
     }
 
-    #hasWon(player: string, getRow: (index: number) => number, getCol: (index: number) => number): boolean {
+    #hasWon(stone: Stone, getRow: (index: number) => number, getCol: (index: number) => number): boolean {
         let countInARow = 0;
         let edge = this.#maxRowSize - 1;
         for (let i = -edge; i <= edge; i++) {
             let r = getRow(i);
             let c = getCol(i);
-            if (this.#isValidIndex(r) && this.#isValidIndex(c) && this.#board[r][c] === player) {
+            if (this.#isValidIndex(r) && this.#isValidIndex(c) && this.#board[r][c] === stone) {
                 countInARow++;
                 if (countInARow === this.#maxRowSize) {
                     return true;
@@ -160,31 +169,13 @@ export class Board {
         return false;
     }
 
-    isPlaceEmpty(row: number, col: number) {
-        return this.#board[row][col] === Game.EmptyPlace;
+    hasStonePlaced(row: number, col: number) {
+        return this.#board[row][col] !== Stone.None;
     }
 
     #isValidIndex(i: number) {
         return 0 <= i && i < this.#size;
     }
 }
-
-class Score {
-    player1: number = 0;
-    player2: number = 0;
-    scoreIndex: number = 0;
-}
-
-class BestScore {
-    row: number;
-    col: number;
-
-    constructor(row: number, col: number) {
-        this.row = row;
-        this.col = col;
-    }
-}
-
-
 
 

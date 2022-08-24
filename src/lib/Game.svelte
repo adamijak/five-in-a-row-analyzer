@@ -1,36 +1,44 @@
 <script lang="ts">
-    import * as Game from "$lib/Game";
     import { Board } from "$lib/Board";
-    export let boardSize = 30;
+    import { Stone, StoneStrings } from "$lib/Stone";
+    import { Player } from "$lib/Player";
+    import type { Bot } from "$lib/Bot";
 
-    let currentPlayer: string;
-    let win: boolean;
-    let board: Board;
+    let boardSize = 30;
     let scoreVisible = false;
+
+    let currentPlayer: Player | Bot;
+    let nextPlayer: Player | Bot;
+    let winner: Player | Bot | null;
+    let board: Board;
+
+    function restart() {
+        currentPlayer = new Player(Stone.O);
+        nextPlayer = new Player(Stone.X);
+        board = new Board(boardSize);
+        winner = null;
+    }
     restart();
 
     function handleClick(r: number, c: number) {
-        if (win || !board.isPlaceEmpty(r, c)) {
+        if (winner != null || board.hasStonePlaced(r, c)) {
             return;
         }
-        board.makeMove(currentPlayer, r, c);
-        board = board;
-        win = board.hasWon(currentPlayer, r, c);
-        currentPlayer = Game.swapPlayer(currentPlayer);
-    }
 
-    function restart() {
-        currentPlayer = Game.Player1;
-        board = new Board(boardSize);
-        win = false;
+        if (currentPlayer.makeMove(board, r, c)) {
+            winner = currentPlayer;
+        }
+
+        board = board;
+        [currentPlayer, nextPlayer] = [nextPlayer, currentPlayer]; // Swap players
     }
 </script>
 
 <div style="text-align: center;">
-    {#if win}
-        <h1>{Game.swapPlayer(currentPlayer)} won!</h1>
+    {#if winner != null}
+        <h1>{winner.stoneString} won!</h1>
     {:else}
-        <h1>Current Player: {currentPlayer}</h1>
+        <h1>Current Player: {currentPlayer.stoneString}</h1>
     {/if}
     <button on:click={restart}>Restart</button>
     <button on:click={() => (scoreVisible = !scoreVisible)}
@@ -56,7 +64,9 @@
                     class="grid-item"
                     on:click={() => handleClick(r, c)}
                 >
-                    {board.score[r][c].scoreIndex > 0 ? "." : value}
+                    {board.score[r][c].scoreIndex > 0
+                        ? "."
+                        : StoneStrings[value]}
                 </div>
             {:else}
                 <div
@@ -64,7 +74,7 @@
                     class="grid-item"
                     on:click={() => handleClick(r, c)}
                 >
-                    {value}
+                    {StoneStrings[value]}
                 </div>
             {/if}
         {/each}
