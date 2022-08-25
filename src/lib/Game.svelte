@@ -58,7 +58,10 @@
         Show score:<input type="checkbox" bind:checked={scoreVisible} />
     </div>
     <div>
-        Show score matrix:<input type="checkbox" bind:checked={scoreVisible} />
+        Show score matrix:<input
+            type="checkbox"
+            bind:checked={scoreMatrixVisible}
+        />
     </div>
     <div>
         Player O:
