@@ -13,20 +13,26 @@
 
     let currentPlayer: Player | Bot;
     let nextPlayer: Player | Bot;
-    let winner: Player | Bot | null;
-    let board: Board;
+    let winner: Player | Bot | null = null;
+    let board: Board = new Board(boardSize);
+    let started: boolean = false;
 
-    function restart() {
-        currentPlayer = playerOHuman ? new Player(Stone.O) : new Bot(Stone.O);
-        nextPlayer = playerXHuman ? new Player(Stone.X) : new Bot(Stone.X);
-        board = new Board(boardSize);
-        winner = null;
+    function handleStart() {
+        if (!started) {
+            currentPlayer = playerOHuman
+                ? new Player(Stone.O)
+                : new Bot(Stone.O);
+            nextPlayer = playerXHuman ? new Player(Stone.X) : new Bot(Stone.X);
+            winner = null;
 
-        if (currentPlayer instanceof Bot) {
-            gameLoop(-1, -1);
+            if (currentPlayer instanceof Bot) {
+                gameLoop(-1, -1);
+            }
+        } else {
+            board = new Board(boardSize);
         }
+        started = !started;
     }
-    restart();
 
     function gameLoop(r: number, c: number) {
         do {
@@ -40,7 +46,7 @@
     }
 
     function handleClick(r: number, c: number) {
-        if (winner != null || board.hasStonePlaced(r, c)) {
+        if (!started || winner != null || board.hasStonePlaced(r, c)) {
             return;
         }
 
@@ -51,8 +57,10 @@
 <div style="text-align: center;">
     {#if winner != null}
         <div>Player {winner.stoneString} won!</div>
-    {:else}
+    {:else if started}
         <div>Current Player: {currentPlayer.stoneString}</div>
+    {:else}
+        <div>Press start to play.</div>
     {/if}
     <div>
         Show score:<input type="checkbox" bind:checked={scoreVisible} />
@@ -80,7 +88,7 @@
         >
     </div>
     <div>
-        <button on:click={restart}>Restart</button>
+        <button on:click={handleStart}>{started ? "Stop" : "Start"}</button>
     </div>
 </div>
 <br />
