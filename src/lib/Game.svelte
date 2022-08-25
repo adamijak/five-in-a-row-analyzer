@@ -6,6 +6,7 @@
 
     let boardSize = 30;
     let scoreVisible = false;
+    let scoreMatrixVisible = false;
 
     let currentPlayer: Player | Bot;
     let nextPlayer: Player | Bot;
@@ -81,23 +82,25 @@
     {/each}
 </div>
 <br />
-<div
-    class="grid-container"
-    style="grid-template-columns: repeat({boardSize}, 2rem); grid-template-rows: repeat({boardSize}, 2rem); "
->
-    {#each board.score as rowValues, r}
-        {#each rowValues as value, c}
-            <div class="grid-item">
-                <div style="text-align: start;padding-left: 0.4rem;">
-                    {value.player1}
+{#if scoreMatrixVisible}
+    <div
+        class="grid-container"
+        style="grid-template-columns: repeat({boardSize}, 2rem); grid-template-rows: repeat({boardSize}, 2rem); "
+    >
+        {#each board.score as rowValues, r}
+            {#each rowValues as value, c}
+                <div class="grid-item">
+                    <div style="text-align: start;padding-left: 0.4rem;">
+                        {value.player1}
+                    </div>
+                    <div style="text-align: end; padding-right: 0.4rem;">
+                        {value.player2}
+                    </div>
                 </div>
-                <div style="text-align: end; padding-right: 0.4rem;">
-                    {value.player2}
-                </div>
-            </div>
+            {/each}
         {/each}
-    {/each}
-</div>
+    </div>
+{/if}
 
 <style>
     .grid-container {
