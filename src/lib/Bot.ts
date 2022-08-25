@@ -1,5 +1,6 @@
 import type { Board } from "$lib/Board";
 import { Stone, StoneStrings } from "$lib/Stone";
+import { BestScore } from "$lib/Score";
 export class Bot {
     #stone: Stone;
 
@@ -12,10 +13,22 @@ export class Bot {
     }
 
 
-    makeMove(board: Board) {
-        board.getBestMoves();
+    makeMove(board: Board): boolean {
+        let bestScores = board.bestScores;
+        let move: BestScore | null;
+        if (bestScores.length === 0) {
+            if (board.hasStonePlaced(15, 15)) {
+                throw new Error("Imposible game state.");
+            }
+            move = new BestScore(15, 15); //Place first stone 
 
-        board.putStone(this.#stone, 0, 0);
+        } else {
+            let index = Math.floor(Math.random() * bestScores.length);
+            move = bestScores[index];
+        }
+
+        board.putStone(this.#stone, move.row, move.col);
+        return board.hasWon(this.#stone, move.row, move.col);
     }
 
     get stone() {

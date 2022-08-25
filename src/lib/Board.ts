@@ -6,6 +6,7 @@ export class Board {
     #maxRowSize: number
     #board: Stone[][];
     #score: Score[][];
+    #bestScores: BestScore[];
 
     constructor(size: number = 5) {
         this.#size = size;
@@ -16,6 +17,7 @@ export class Board {
         this.#score = Array.from({ length: size }, () =>
             Array.from({ length: size }, () => new Score)
         );
+        this.#bestScores = new Array();
     }
 
     get board() {
@@ -23,6 +25,10 @@ export class Board {
     }
     get score() {
         return this.#score;
+    }
+
+    get bestScores() {
+        return this.#bestScores;
     }
 
     putStone(stone: Stone, row: number, col: number) {
@@ -133,12 +139,9 @@ export class Board {
         }
         for (let i = 0; i < bestScores.length; i++) {
             let score = bestScores[i];
-            this.#score[score.row][score.col].scoreIndex = bestScores.length - i;
+            this.#score[score.row][score.col].scoreIndex = 1;
         }
-    }
-
-    getBestMoves() {
-
+        this.#bestScores = bestScores;
     }
 
     hasWon(stone: Stone, row: number, col: number): boolean {

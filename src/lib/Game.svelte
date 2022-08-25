@@ -2,11 +2,14 @@
     import { Board } from "$lib/Board";
     import { Stone, StoneStrings } from "$lib/Stone";
     import { Player } from "$lib/Player";
-    import type { Bot } from "$lib/Bot";
+    import { Bot } from "$lib/Bot";
 
     let boardSize = 30;
     let scoreVisible = false;
     let scoreMatrixVisible = false;
+
+    let playerOHuman = true;
+    let playerXHuman = true;
 
     let currentPlayer: Player | Bot;
     let nextPlayer: Player | Bot;
@@ -14,37 +17,68 @@
     let board: Board;
 
     function restart() {
-        currentPlayer = new Player(Stone.O);
-        nextPlayer = new Player(Stone.X);
+        currentPlayer = playerOHuman ? new Player(Stone.O) : new Bot(Stone.O);
+        nextPlayer = playerXHuman ? new Player(Stone.X) : new Bot(Stone.X);
         board = new Board(boardSize);
         winner = null;
+
+        if (currentPlayer instanceof Bot) {
+            gameLoop(-1, -1);
+        }
     }
     restart();
+
+    function gameLoop(r: number, c: number) {
+        do {
+            if (currentPlayer.makeMove(board, r, c)) {
+                winner = currentPlayer;
+            }
+
+            board = board;
+            [currentPlayer, nextPlayer] = [nextPlayer, currentPlayer]; // Swap players
+        } while (currentPlayer instanceof Bot && winner == null);
+    }
 
     function handleClick(r: number, c: number) {
         if (winner != null || board.hasStonePlaced(r, c)) {
             return;
         }
 
-        if (currentPlayer.makeMove(board, r, c)) {
-            winner = currentPlayer;
-        }
-
-        board = board;
-        [currentPlayer, nextPlayer] = [nextPlayer, currentPlayer]; // Swap players
+        gameLoop(r, c);
     }
 </script>
 
 <div style="text-align: center;">
     {#if winner != null}
-        <h1>{winner.stoneString} won!</h1>
+        <div>Player {winner.stoneString} won!</div>
     {:else}
-        <h1>Current Player: {currentPlayer.stoneString}</h1>
+        <div>Current Player: {currentPlayer.stoneString}</div>
     {/if}
-    <button on:click={restart}>Restart</button>
-    <button on:click={() => (scoreVisible = !scoreVisible)}
-        >{scoreVisible ? "Hide score" : "Show score"}</button
-    >
+    <div>
+        Show score:<input type="checkbox" bind:checked={scoreVisible} />
+    </div>
+    <div>
+        Show score matrix:<input type="checkbox" bind:checked={scoreVisible} />
+    </div>
+    <div>
+        Player O:
+        <button
+            on:click={() => {
+                playerOHuman = !playerOHuman;
+            }}>{playerOHuman ? "Human" : "Bot"}</button
+        >
+    </div>
+    <div>
+        Player X:
+        <button
+            on:click={() => {
+                playerXHuman = !playerXHuman;
+            }}>{playerXHuman ? "Human" : "Bot"}</button
+        >
+    </div>
+    <div>
+        <button on:click={restart}>Restart</button>
+    </div>
 </div>
 <br />
 <div
