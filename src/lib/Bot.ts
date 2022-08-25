@@ -20,7 +20,7 @@ export class Bot {
             if (board.hasStonePlaced(15, 15)) {
                 throw new Error("Imposible game state.");
             }
-            move = new BestScore(15, 15); //Place first stone 
+            move = new BestScore(14, 14); //Place first stone 
 
         } else {
             let index = Math.floor(Math.random() * bestScores.length);
