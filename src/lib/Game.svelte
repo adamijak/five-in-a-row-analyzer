@@ -3,7 +3,9 @@
     import { Stone, StoneStrings } from "$lib/Stone";
     import { Player } from "$lib/Player";
     import { Bot } from "$lib/Bot";
+    import GridItem from "./GridItem.svelte";
 
+    let gridItemSize = 32;
     let boardSize = 30;
     let scoreVisible = false;
     let scoreMatrixVisible = false;
@@ -94,35 +96,19 @@
 <br />
 <div
     class="grid-container"
-    style="grid-template-columns: repeat({boardSize}, 2rem); grid-template-rows: repeat({boardSize}, 2rem)"
+    style="grid-template-columns: repeat({boardSize}, {gridItemSize + 1}px);
+    grid-template-rows: repeat({boardSize}, {gridItemSize + 1}px)"
 >
     {#each board.board as rowValues, r}
         {#each rowValues as value, c}
-            {#if scoreVisible}
-                <div
-                    style="background-color: rgb(
-                    {255 - board.score[r][c].player1 * 10},
-                    {255 -
-                        board.score[r][c].player1 * 3 -
-                        board.score[r][c].player2 * 3},
-                    {255 - board.score[r][c].player2 * 10});
-                    font-size: 1.5rem"
-                    class="grid-item"
-                    on:click={() => handleClick(r, c)}
-                >
-                    {board.score[r][c].scoreIndex > 0
-                        ? "."
-                        : StoneStrings[value]}
-                </div>
-            {:else}
-                <div
-                    style="background-color: white; font-size: 1.5rem"
-                    class="grid-item"
-                    on:click={() => handleClick(r, c)}
-                >
-                    {StoneStrings[value]}
-                </div>
-            {/if}
+            <GridItem
+                size={gridItemSize}
+                stone={value}
+                onClick={() => handleClick(r, c)}
+                isBest={board.score[r][c].scoreIndex > 0}
+                score={board.score[r][c]}
+                {scoreVisible}
+            />
         {/each}
     {/each}
 </div>
@@ -130,15 +116,16 @@
 {#if scoreMatrixVisible}
     <div
         class="grid-container"
-        style="grid-template-columns: repeat({boardSize}, 2rem); grid-template-rows: repeat({boardSize}, 2rem); "
+        style="grid-template-columns: repeat({boardSize}, {gridItemSize + 1}px);
+        grid-template-rows: repeat({boardSize}, {gridItemSize + 1}px)"
     >
         {#each board.score as rowValues, r}
             {#each rowValues as value, c}
                 <div class="grid-item">
-                    <div style="text-align: start;padding-left: 0.4rem;">
+                    <div style="text-align: start;padding-left: 0.5rem;">
                         {value.player1}
                     </div>
-                    <div style="text-align: end; padding-right: 0.4rem;">
+                    <div style="text-align: end; padding-right: 0.5rem;">
                         {value.player2}
                     </div>
                 </div>
