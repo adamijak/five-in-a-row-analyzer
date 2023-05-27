@@ -75,6 +75,6 @@
         transform: scale(1);
     }
     .best-grid-item {
-        background: yellow;
+        background: gold;
     }
 </style>
