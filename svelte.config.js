@@ -7,9 +7,9 @@ const config = {
 
 	kit: {
 		adapter: adapter(),
-		// paths: {
-		// 	base: "/five-in-a-row-analyzer",
-		// }
+		paths: {
+			base: "/five-in-a-row-analyzer",
+		}
 	}
 };
 
