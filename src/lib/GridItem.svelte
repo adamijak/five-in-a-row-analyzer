@@ -8,24 +8,28 @@
     export let isBest: boolean = false;
     export let score: Score;
     export let scoreVisible: boolean = false;
+
+    $: red = scoreVisible ? 125 + 20 * (score.player1 - score.player2) : 255;
+    $: green = scoreVisible ? 0 : 255;
+    $: blue = scoreVisible ? 125 + 20 * (score.player2 - score.player1) : 255;
+    $: alpha = scoreVisible ? (score.player1 + score.player2) / 20 : 1;
+
+    $: best_grid_item = scoreVisible && isBest;
 </script>
 
 <!-- TODO: think about performance, -->
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <svg
     class="grid-item"
+    class:best-grid-item={best_grid_item}
     width={size}
     height={size}
     xmlns="http://www.w3.org/2000/svg"
     on:click={onClick}
-    style="box-shadow: 0px 0px {scoreVisible && isBest
-        ? '3px 2px'
-        : '0px 0px'} red inset;
-    background-color: {scoreVisible
-        ? `rgb(${255 - score.player1 * 10},${
-              255 - score.player1 * 3 - score.player2 * 3
-          },${255 - score.player2 * 10})`
-        : 'white'}"
+    style:--red={red}
+    style:--green={green}
+    style:--blue={blue}
+    style:--alpha={alpha}
 >
     {#if stone === Stone.O}
         <circle
@@ -53,6 +57,24 @@
 
 <style>
     .grid-item {
-        border: 1px solid black;
+        border: 2px solid black;
+        background-color: rgba(
+            var(--red),
+            var(--green),
+            var(--blue),
+            var(--alpha)
+        );
+    }
+
+    .grid-item:hover {
+        box-shadow: 0px 0px 0px 1px grey inset;
+        transform: scale(1.1);
+        cursor: pointer;
+    }
+    .grid-item:active {
+        transform: scale(1);
+    }
+    .best-grid-item {
+        background: yellow;
     }
 </style>

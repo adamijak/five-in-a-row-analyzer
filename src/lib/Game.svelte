@@ -4,6 +4,7 @@
     import { Player } from "$lib/Player";
     import { Bot } from "$lib/Bot";
     import GridItem from "./GridItem.svelte";
+    import { onMount } from "svelte";
 
     let gridItemSize = 32;
     let boardSize = 30;
@@ -18,6 +19,13 @@
     let winner: Player | Bot | null = null;
     let board: Board = new Board(boardSize);
     let started: boolean = false;
+
+    let fanfare: HTMLAudioElement | null = null;
+
+    onMount(() => {
+        fanfare = new Audio('/fanfare.mp3');
+    });
+    
 
     function handleStart() {
         if (!started) {
@@ -40,6 +48,7 @@
         do {
             if (currentPlayer.makeMove(board, r, c)) {
                 winner = currentPlayer;
+                fanfare?.play();
             }
 
             board = board;
@@ -96,8 +105,8 @@
 <br />
 <div
     class="grid-container"
-    style="grid-template-columns: repeat({boardSize}, {gridItemSize + 1}px);
-    grid-template-rows: repeat({boardSize}, {gridItemSize + 1}px)"
+    style="grid-template-columns: repeat({boardSize}, {gridItemSize + 2}px);
+    grid-template-rows: repeat({boardSize}, {gridItemSize + 2}px)"
 >
     {#each board.board as rowValues, r}
         {#each rowValues as value, c}
@@ -116,8 +125,8 @@
 {#if scoreMatrixVisible}
     <div
         class="grid-container"
-        style="grid-template-columns: repeat({boardSize}, {gridItemSize + 1}px);
-        grid-template-rows: repeat({boardSize}, {gridItemSize + 1}px)"
+        style="grid-template-columns: repeat({boardSize}, {gridItemSize + 2}px);
+        grid-template-rows: repeat({boardSize}, {gridItemSize + 2}px)"
     >
         {#each board.score as rowValues, r}
             {#each rowValues as value, c}
@@ -140,7 +149,7 @@
         justify-content: center;
     }
     .grid-item {
-        border: 1px solid black;
+        border: 2px solid black;
         width: 2rem;
         height: 2rem;
         font-size: 0.8rem;
