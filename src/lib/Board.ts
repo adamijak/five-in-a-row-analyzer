@@ -1,5 +1,6 @@
 import { Stone } from "$lib/Stone";
 import { BestScore, Score } from "$lib/Score";
+import { Log } from "$lib/Log";
 export class Board {
 
     #size: number;
@@ -7,6 +8,7 @@ export class Board {
     #board: Stone[][];
     #score: Score[][];
     #bestScores: BestScore[];
+    #log: Log;
 
     constructor(size: number = 5) {
         this.#size = size;
@@ -18,6 +20,11 @@ export class Board {
             Array.from({ length: size }, () => new Score)
         );
         this.#bestScores = new Array();
+        this.#log = new Log();
+    }
+
+    get log() {
+        return this.#log;
     }
 
     get board() {
@@ -32,6 +39,7 @@ export class Board {
     }
 
     putStone(stone: Stone, row: number, col: number) {
+        this.#log.push(row, col);
         this.#board[row][col] = stone;
 
         this.#starIterate(row, col, (r, c) => {
