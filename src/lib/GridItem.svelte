@@ -1,6 +1,6 @@
 <script lang="ts">
-    import type { Score } from "./Score";
-    import { Stone } from "./Stone";
+    import type { Score } from "$lib/Score";
+    import { Stone } from "$lib/Stone";
 
     export let onClick: any;
     export let stone: Stone;
@@ -30,6 +30,7 @@
     style:--green={green}
     style:--blue={blue}
     style:--alpha={alpha}
+    style:pointer-events={stone === Stone.None ? "auto" : "none"}
 >
     {#if stone === Stone.O}
         <circle
