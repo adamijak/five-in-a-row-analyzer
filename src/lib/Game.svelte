@@ -23,7 +23,7 @@
     let fanfare: HTMLAudioElement | null = null;
 
     onMount(() => {
-        fanfare = new Audio('/fanfare.mp3');
+        fanfare = new Audio('fanfare.mp3');
     });
     
 
