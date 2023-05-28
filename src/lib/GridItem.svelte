@@ -10,9 +10,9 @@
     export let score: Score;
     export let scoreType: ScoreType = ScoreType.None;
 
-    $: red = 125 + 20 * (score.player1 - score.player2);
+    $: red = 125 + 20 * (score.player2 - score.player1);
     $: green = 0;
-    $: blue = 125 + 20 * (score.player2 - score.player1);
+    $: blue = 125 + 20 * (score.player1 - score.player2);
     $: alpha = (score.player1 + score.player2) / 20;
 
     $: grid_item_colored = scoreType !== ScoreType.None;
@@ -53,7 +53,7 @@
                 size / 8}M{size - size / 8} {size / 8}L{size / 8} {size -
                 size / 8}"
             stroke-width={size / 10}
-            stroke="#000000"
+            stroke="#FF0000"
             stroke-linecap="round"
             stroke-linejoin="round"
         />
@@ -61,7 +61,7 @@
 </svg>
 
 <style>
-    .text{
+    .text {
         font-size: xx-large;
     }
     .grid-item {
@@ -80,7 +80,21 @@
         );
     }
     .grid-item-best {
-        background-color: gold;
+        animation: 2.5s infinite colorchange;
+        animation-timing-function: ease-in-out;
+        --deg: 2deg;
+    }
+
+    @keyframes colorchange {
+        3%, 9%, 15%{
+            transform: rotate(calc(2 * var(--deg)));
+        }
+        6%, 12%, 18% {
+            transform: rotate(calc(-2 * var(--deg)));
+        }
+        21% {
+            transform: rotate(0deg);
+        }
     }
 
     .grid-item:hover {
