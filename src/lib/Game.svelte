@@ -99,7 +99,7 @@
             <!-- svelte-ignore a11y-missing-content -->
             <a
                 bind:this={downloadLink}
-                href="localhost"
+                href="/"
                 download="log.txt"
                 style="display:none"
             />
