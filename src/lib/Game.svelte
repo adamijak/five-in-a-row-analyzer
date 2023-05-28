@@ -91,7 +91,7 @@
         <button on:click={handleDownload}>Download log</button>
         <!-- svelte-ignore a11y-missing-attribute -->
         <!-- svelte-ignore a11y-missing-content -->
-        <a bind:this={downloadLink} download="log.txt" style="display:none" />
+        <a bind:this={downloadLink} href="localhost" download="log.txt" style="display:none" />
     </div>
     <form method="dialog">
         <button>Close</button>
