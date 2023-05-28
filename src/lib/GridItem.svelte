@@ -66,8 +66,8 @@
     }
     .grid-item {
         border: 1px solid black;
-        width: calc(3vw - 1px);
-        height: calc(3vw - 1px);
+        width: calc(100% - 1px);
+        height: calc(100% - 1px);
         transition: background-color 0.4s ease-in-out;
     }
 

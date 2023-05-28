@@ -71,29 +71,40 @@
 
 <dialog bind:this={settingsDialog}>
     <h2>Settings</h2>
-    <div>
-        Player O:
-        <button
-            on:click={() => {
-                playerOHuman = !playerOHuman;
-            }}>{playerOHuman ? "Human" : "Bot"}</button
-        >
-    </div>
-    <div>
-        Player X:
-        <button
-            on:click={() => {
-                playerXHuman = !playerXHuman;
-            }}>{playerXHuman ? "Human" : "Bot"}</button
-        >
-    </div>
-    <div>
-        <button on:click={handleDownload}>Download log</button>
-        <!-- svelte-ignore a11y-missing-content -->
-        <a bind:this={downloadLink} href="localhost" download="log.txt" style="display:none" />
-    </div>
     <form method="dialog">
-        <button>Close</button>
+        <div>
+            <div class="form-row">
+                <label for="playerOButton">Player O</label>
+                <button
+                    type="button"
+                    id="playerOButton"
+                    on:click={() => {
+                        playerOHuman = !playerOHuman;
+                    }}>{playerOHuman ? "Human" : "Bot"}</button
+                >
+            </div>
+            <div class="form-row">
+                <label for="playerXButton">Player X</label>
+                <button
+                    type="button"
+                    id="playerXButton"
+                    on:click={() => {
+                        playerXHuman = !playerXHuman;
+                    }}>{playerXHuman ? "Human" : "Bot"}</button
+                >
+            </div>
+        </div>
+        <div class="form-row" style="margin-top:2rem">
+            <button on:click={handleDownload}>Download log</button>
+            <!-- svelte-ignore a11y-missing-content -->
+            <a
+                bind:this={downloadLink}
+                href="localhost"
+                download="log.txt"
+                style="display:none"
+            />
+            <button>Close</button>
+        </div>
     </form>
 </dialog>
 
@@ -136,13 +147,33 @@
     .grid-container {
         display: grid;
         justify-content: center;
-        grid-template-columns: repeat(var(--boardSize), 3vw);
-        grid-template-rows: repeat(var(--boardSize), 3vw);
+        grid-template-columns: repeat(var(--boardSize), calc(100% / var(--boardSize)));
+        grid-template-rows: repeat(var(--boardSize), calc(100% / var(--boardSize)));
+    }
+
+    .form-row {
+        margin-bottom: 0.75rem;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+    }
+
+    label::after {
+        content: ":";
+    }
+
+    dialog {
+        min-width: 300px;
+    }
+
+    dialog::backdrop {
+        backdrop-filter: blur(5px) grayscale(1);
+        -webkit-backdrop-filter: blur(5px) grayscale(1);
     }
 
     @media (width <= 600px) {
         .menu {
-            justify-content: space-evenly;
+            justify-content: space-between;
         }
 
         dialog {
