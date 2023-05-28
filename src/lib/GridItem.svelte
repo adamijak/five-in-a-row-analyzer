@@ -45,7 +45,7 @@
             cy={size / 2}
             fill="none"
             stroke-width={size / 10}
-            stroke="#000000"
+            stroke="#0000FF"
         />
     {:else if stone === Stone.X}
         <path
