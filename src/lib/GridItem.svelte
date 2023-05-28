@@ -16,14 +16,13 @@
     $: alpha = (score.player1 + score.player2) / 20;
 
     $: grid_item_colored = scoreType !== ScoreType.None;
-    $: grid_item_best = grid_item_colored && isBest;
 </script>
 
 <!-- TODO: think about performance, -->
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <svg
     class="grid-item"
-    class:grid-item-best={grid_item_best}
+    class:grid-item-best={scoreType === ScoreType.RGBMax && isBest}
     class:grid-item-colored={grid_item_colored}
     xmlns="http://www.w3.org/2000/svg"
     on:click={onClick}

@@ -140,6 +140,7 @@
     >
         <option value={ScoreType.None}>None</option>
         <option value={ScoreType.RGB}>RGB score</option>
+        <option value={ScoreType.RGBMax}>RGB score with max</option>
         <option value={ScoreType.Numbers}>Score numbers</option>
     </select>
 </nav>
