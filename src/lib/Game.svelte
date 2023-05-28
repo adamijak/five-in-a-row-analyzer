@@ -22,6 +22,8 @@
     let fanfare: HTMLAudioElement | null = null;
 
     let settingsDialog: HTMLDialogElement | null = null;
+    let winnerDialog: HTMLDialogElement | null = null;
+    let winnerDialogOn: boolean = true;
     let downloadLink: HTMLAnchorElement | null = null;
 
     onMount(() => {
@@ -37,6 +39,10 @@
         item = localStorage.getItem("playerXHuman");
         if (item != null) {
             playerXHuman = item === "true";
+        }
+        item = localStorage.getItem("winnerDialogOn");
+        if (item != null) {
+            winnerDialogOn = item === "true";
         }
     });
 
@@ -56,7 +62,10 @@
         do {
             if (currentPlayer.makeMove(board, r, c)) {
                 winner = currentPlayer;
-                fanfare?.play();
+                if (winnerDialogOn){
+                    fanfare!.play();
+                    winnerDialog!.showModal();
+                }
             }
 
             board = board;
@@ -80,6 +89,16 @@
         URL.revokeObjectURL(url);
     }
 </script>
+
+<dialog bind:this={winnerDialog}>
+    <div style="text-align:center">
+        <img src="trophy.svg" alt="trophy" />
+        <h2>Player {winner?.stoneString} has won!</h2>
+        <form method="dialog" style="display:flex;justify-content:right">
+            <button>Close</button>
+        </form>
+    </div>
+</dialog>
 
 <dialog bind:this={settingsDialog}>
     <h2>Settings</h2>
@@ -114,6 +133,21 @@
                     }}
                     >{playerXHuman ? "Human" : "Bot"}
                 </button>
+            </div>
+            <div class="form-row">
+                <label for="winnerDialogOnCheckbox"
+                    >Show trophy and play fanfare</label
+                >
+                <input
+                    type="checkbox"
+                    id="winnerDialogOnCheckbox"
+                    bind:checked={winnerDialogOn}
+                    on:change={() =>
+                        localStorage.setItem(
+                            "winnerDialogOn",
+                            winnerDialogOn.toString()
+                        )}
+                />
             </div>
         </div>
         <div class="form-row" style="margin-top:2rem">
