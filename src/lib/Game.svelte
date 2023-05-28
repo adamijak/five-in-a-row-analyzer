@@ -5,11 +5,11 @@
     import { Bot } from "$lib/Bot";
     import GridItem from "$lib/GridItem.svelte";
     import { onMount } from "svelte";
+    import { ScoreType } from "./ScoreType";
+    import { Score } from "./Score";
 
-    let gridItemSize = 32;
-    let boardSize = 30;
-    let scoreVisible = false;
-
+    let boardSize = 32;
+    let scoreType: ScoreType = ScoreType.None;
     let playerOHuman = true;
     let playerXHuman = true;
 
@@ -21,6 +21,7 @@
 
     let fanfare: HTMLAudioElement | null = null;
 
+    let settingsDialog: HTMLDialogElement | null = null;
     let downloadLink: HTMLAnchorElement | null = null;
 
     onMount(() => {
@@ -68,126 +69,86 @@
     }
 </script>
 
+<dialog bind:this={settingsDialog}>
+    <h2>Settings</h2>
+    <div>
+        Player O:
+        <button
+            on:click={() => {
+                playerOHuman = !playerOHuman;
+            }}>{playerOHuman ? "Human" : "Bot"}</button
+        >
+    </div>
+    <div>
+        Player X:
+        <button
+            on:click={() => {
+                playerXHuman = !playerXHuman;
+            }}>{playerXHuman ? "Human" : "Bot"}</button
+        >
+    </div>
+    <div>
+        <button on:click={handleDownload}>Download log</button>
+        <!-- svelte-ignore a11y-missing-attribute -->
+        <!-- svelte-ignore a11y-missing-content -->
+        <a bind:this={downloadLink} download="log.txt" style="display:none" />
+    </div>
+    <form method="dialog">
+        <button>Close</button>
+    </form>
+</dialog>
+
 <nav class="menu">
-    <a href="#settings">Settings</a>
-    <a href="#game">Game</a>
-    <a href="#score">Score</a>
+    <button on:click={handleStart}>{started ? "Restart" : "Start"}</button>
+    <button on:click={() => settingsDialog?.showModal()}>Settings</button>
+    <select bind:value={scoreType}>
+        <option value={ScoreType.None}>None</option>
+        <option value={ScoreType.RGB}>RGB score</option>
+        <option value={ScoreType.Numbers}>Score numbers</option>
+    </select>
 </nav>
 
-<div id="game" class="tab">
-    <div
-        class="grid-container"
-        style="grid-template-columns: repeat({boardSize}, {gridItemSize + 2}px);
-    grid-template-rows: repeat({boardSize}, {gridItemSize + 2}px)"
-    >
-        {#each board.board as rowValues, r}
-            {#each rowValues as value, c}
-                <GridItem
-                    size={gridItemSize}
-                    stone={value}
-                    onClick={() => handleClick(r, c)}
-                    isBest={board.score[r][c].scoreIndex > 0}
-                    score={board.score[r][c]}
-                    {scoreVisible}
-                />
-            {/each}
-        {/each}
-    </div>
-</div>
-
-<div id="score" class="tab">
-    <div
-        class="grid-container"
-        style="grid-template-columns: repeat({boardSize}, {gridItemSize + 2}px);
-        grid-template-rows: repeat({boardSize}, {gridItemSize + 2}px)"
-    >
-        {#each board.score as rowValues, r}
-            {#each rowValues as value, c}
-                <div class="grid-item">
-                    <div style="text-align: start;padding-left: 0.5rem;">
-                        {value.player1}
-                    </div>
-                    <div style="text-align: end; padding-right: 0.5rem;">
-                        {value.player2}
-                    </div>
-                </div>
-            {/each}
-        {/each}
-    </div>
-</div>
-
-<div id="settings" class="tab">
-    <div style="text-align: center;">
-        {#if winner != null}
-            <div>Player {winner.stoneString} won!</div>
-        {:else if started}
-            <div>Current Player: {currentPlayer.stoneString}</div>
-        {:else}
-            <div>Press start to play.</div>
-        {/if}
-        <div>
-            Show score:<input type="checkbox" bind:checked={scoreVisible} />
-        </div>
-        <div>
-            Player O:
-            <button
-                on:click={() => {
-                    playerOHuman = !playerOHuman;
-                }}>{playerOHuman ? "Human" : "Bot"}</button
-            >
-        </div>
-        <div>
-            Player X:
-            <button
-                on:click={() => {
-                    playerXHuman = !playerXHuman;
-                }}>{playerXHuman ? "Human" : "Bot"}</button
-            >
-        </div>
-        <div>
-            <button on:click={handleStart}
-                >{started ? "Restart" : "Start"}</button
-            >
-        </div>
-        <div>
-            <button on:click={handleDownload}>Download log</button>
-            <!-- svelte-ignore a11y-missing-attribute -->
-            <!-- svelte-ignore a11y-missing-content -->
-            <a
-                bind:this={downloadLink}
-                download="log.txt"
-                style="display:none"
+<div class="grid-container" style:--boardSize={boardSize}>
+    {#each board.board as rowValues, r}
+        {#each rowValues as value, c}
+            <GridItem
+                stone={value}
+                onClick={() => handleClick(r, c)}
+                isBest={board.score[r][c].scoreIndex > 0}
+                score={board.score[r][c]}
+                {scoreType}
             />
-        </div>
-    </div>
+        {/each}
+    {/each}
 </div>
 
 <style>
     .menu {
         display: flex;
         flex-direction: row;
-        justify-content: space-evenly;
+        justify-content: start;
+        background-color: lightgrey;
+    }
+
+    .menu > * {
+        margin: 0.5rem;
     }
 
     .grid-container {
         display: grid;
         justify-content: center;
-    }
-    .grid-item {
-        border: 2px solid black;
-        width: 2rem;
-        height: 2rem;
-        font-size: 0.8rem;
-        text-align: center;
+        grid-template-columns: repeat(var(--boardSize), 3vw);
+        grid-template-rows: repeat(var(--boardSize), 3vw);
     }
 
-    .tab,
-    .tab:target ~ #settings {
-        display: none;
-    }
+    @media (width <= 600px) {
+        .menu {
+            justify-content: space-evenly;
+        }
 
-    #settings,
-    .tab:target {
-        display: initial;
+        dialog {
+            width: 100vw;
+            height: 100vh;
+        }
     }
 </style>

@@ -1,29 +1,30 @@
 <script lang="ts">
     import type { Score } from "$lib/Score";
     import { Stone } from "$lib/Stone";
+    import { ScoreType } from "./ScoreType";
 
     export let onClick: any;
     export let stone: Stone;
-    export let size: number = 32;
+    export let size: number = 100;
     export let isBest: boolean = false;
     export let score: Score;
-    export let scoreVisible: boolean = false;
+    export let scoreType: ScoreType = ScoreType.None;
 
-    $: red = scoreVisible ? 125 + 20 * (score.player1 - score.player2) : 255;
-    $: green = scoreVisible ? 0 : 255;
-    $: blue = scoreVisible ? 125 + 20 * (score.player2 - score.player1) : 255;
-    $: alpha = scoreVisible ? (score.player1 + score.player2) / 20 : 1;
+    $: red = 125 + 20 * (score.player1 - score.player2);
+    $: green = 0;
+    $: blue = 125 + 20 * (score.player2 - score.player1);
+    $: alpha = (score.player1 + score.player2) / 20;
 
-    $: best_grid_item = scoreVisible && isBest;
+    $: grid_item_colored = scoreType !== ScoreType.None;
+    $: grid_item_best = grid_item_colored && isBest;
 </script>
 
 <!-- TODO: think about performance, -->
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <svg
     class="grid-item"
-    class:best-grid-item={best_grid_item}
-    width={size}
-    height={size}
+    class:grid-item-best={grid_item_best}
+    class:grid-item-colored={grid_item_colored}
     xmlns="http://www.w3.org/2000/svg"
     on:click={onClick}
     style:--red={red}
@@ -31,8 +32,13 @@
     style:--blue={blue}
     style:--alpha={alpha}
     style:pointer-events={stone === Stone.None ? "auto" : "none"}
+    preserveAspectRatio="none"
+    viewBox={`0 0 ${size} ${size}`}
 >
-    {#if stone === Stone.O}
+    {#if scoreType === ScoreType.Numbers && stone !== Stone.O && stone !== Stone.X}
+        <text x="10" y="30" class="text">{score.player1}</text>
+        <text x="60" y="80" class="text">{score.player2}</text>
+    {:else if stone === Stone.O}
         <circle
             r={size / 2 - size / 8}
             cx={size / 2}
@@ -40,7 +46,6 @@
             fill="none"
             stroke-width={size / 10}
             stroke="#000000"
-            shape-rendering="optimizeSpeed"
         />
     {:else if stone === Stone.X}
         <path
@@ -51,20 +56,31 @@
             stroke="#000000"
             stroke-linecap="round"
             stroke-linejoin="round"
-            shape-rendering="optimizeSpeed"
         />
     {/if}
 </svg>
 
 <style>
+    .text{
+        font-size: xx-large;
+    }
     .grid-item {
-        border: 2px solid black;
+        border: 1px solid black;
+        width: calc(3vw - 1px);
+        height: calc(3vw - 1px);
+        transition: background-color 0.4s ease-in-out;
+    }
+
+    .grid-item-colored {
         background-color: rgba(
             var(--red),
             var(--green),
             var(--blue),
             var(--alpha)
         );
+    }
+    .grid-item-best {
+        background-color: gold;
     }
 
     .grid-item:hover {
@@ -74,8 +90,5 @@
     }
     .grid-item:active {
         transform: scale(1);
-    }
-    .best-grid-item {
-        background: gold;
     }
 </style>
