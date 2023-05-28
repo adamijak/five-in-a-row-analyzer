@@ -26,6 +26,18 @@
 
     onMount(() => {
         fanfare = new Audio("fanfare.mp3");
+        let item = localStorage.getItem("scoreType");
+        if (item != null) {
+            scoreType = parseInt(item);
+        }
+        item = localStorage.getItem("playerOHuman");
+        if (item != null) {
+            playerOHuman = item === "true";
+        }
+        item = localStorage.getItem("playerXHuman");
+        if (item != null) {
+            playerXHuman = item === "true";
+        }
     });
 
     function handleStart() {
@@ -80,8 +92,13 @@
                     id="playerOButton"
                     on:click={() => {
                         playerOHuman = !playerOHuman;
-                    }}>{playerOHuman ? "Human" : "Bot"}</button
-                >
+                        localStorage.setItem(
+                            "playerOHuman",
+                            playerOHuman.toString()
+                        );
+                    }}
+                    >{playerOHuman ? "Human" : "Bot"}
+                </button>
             </div>
             <div class="form-row">
                 <label for="playerXButton">Player X</label>
@@ -90,8 +107,13 @@
                     id="playerXButton"
                     on:click={() => {
                         playerXHuman = !playerXHuman;
-                    }}>{playerXHuman ? "Human" : "Bot"}</button
-                >
+                        localStorage.setItem(
+                            "playerXHuman",
+                            playerXHuman.toString()
+                        );
+                    }}
+                    >{playerXHuman ? "Human" : "Bot"}
+                </button>
             </div>
         </div>
         <div class="form-row" style="margin-top:2rem">
@@ -111,7 +133,11 @@
 <nav class="menu">
     <button on:click={handleStart}>{started ? "Restart" : "Start"}</button>
     <button on:click={() => settingsDialog?.showModal()}>Settings</button>
-    <select bind:value={scoreType}>
+    <select
+        bind:value={scoreType}
+        on:change={() =>
+            localStorage.setItem("scoreType", scoreType.toString())}
+    >
         <option value={ScoreType.None}>None</option>
         <option value={ScoreType.RGB}>RGB score</option>
         <option value={ScoreType.Numbers}>Score numbers</option>
@@ -147,8 +173,14 @@
     .grid-container {
         display: grid;
         justify-content: center;
-        grid-template-columns: repeat(var(--boardSize), calc(100% / var(--boardSize)));
-        grid-template-rows: repeat(var(--boardSize), calc(100% / var(--boardSize)));
+        grid-template-columns: repeat(
+            var(--boardSize),
+            calc(100% / var(--boardSize))
+        );
+        grid-template-rows: repeat(
+            var(--boardSize),
+            calc(100% / var(--boardSize))
+        );
     }
 
     .form-row {
