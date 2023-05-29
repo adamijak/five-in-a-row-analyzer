@@ -16,6 +16,11 @@ If you select RGB option with Max, the most *important* fields will start to wig
 
 The Score numbers options shows importance score for each player, mostly for debugging purposes.
 
+## Bots
+
+Bots always select one of the overall most *important* fields on board.
+Try them out and let them play against each other!
+
 ## Log
 
 You can download log of the current game which is stored in txt file.
