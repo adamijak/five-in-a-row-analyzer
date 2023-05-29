@@ -172,7 +172,7 @@
         on:change={() =>
             localStorage.setItem("scoreType", scoreType.toString())}
     >
-        <option value={ScoreType.None}>None</option>
+        <option value={ScoreType.None}>-- Select analysis --</option>
         <option value={ScoreType.RGB}>RGB score</option>
         <option value={ScoreType.RGBMax}>RGB score with max</option>
         <option value={ScoreType.Numbers}>Score numbers</option>
@@ -238,7 +238,7 @@
         -webkit-backdrop-filter: blur(5px) grayscale(1);
     }
 
-    @media (width <= 600px) {
+    @media (width <= 768px) {
         .menu {
             justify-content: space-between;
         }
